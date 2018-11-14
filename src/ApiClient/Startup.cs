@@ -23,7 +23,9 @@ namespace ApiClient
 
             services.AddAuthentication(setup =>
                 {
+                    // be careful not to use the DefaultAuthenticationScheme or you get an error
                     setup.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    // no cookie here
                     setup.DefaultChallengeScheme =  OpenIdConnectDefaults.AuthenticationScheme;
                 })
                 .AddCookie()
@@ -34,16 +36,20 @@ namespace ApiClient
                     // otherwise "openid" and "profile" always come in as default scopes
                     setup.Scope.Clear();
 
+                    // url of server, check out port to make sure
                     setup.Authority = "https://localhost:44301";
+                    // make sure it is the same client name as used on the server
                     setup.ClientId = "Hybrid";
                     setup.ClientSecret = "secret";
+                    // response
                     setup.ResponseType = "code id_token";
 
-                    // now we add the specific claims
+                    // now we add the specific scopes
                     setup.Scope.Add("openid");
                     setup.Scope.Add("profile");
                     setup.Scope.Add("basket");
 
+                    // save them to the http context
                     setup.SaveTokens = true;
 
                 });
@@ -72,7 +78,10 @@ namespace ApiClient
                 app.UseHsts();
             }
 
+
             app.UseAuthentication();
+            // must absolutely add this so that the default /signin-oidc endpoint
+            // gets set up and listening for requests callbacks
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

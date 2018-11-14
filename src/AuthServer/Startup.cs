@@ -54,6 +54,7 @@
                 {
                     new Client()
                     {
+                        // make sure it is the same client name as used on the client
                         ClientId = "Hybrid",
                         ClientSecrets = {new Secret("secret".Sha256())},
                         ClientName = "My Own Hybrid Client",
@@ -67,8 +68,12 @@
                         AllowedGrantTypes = new []{
                             GrantType.Hybrid
                         },
-                        RedirectUris = new [] { "https://localhost:44317/signin-oidc" }
-                        
+                        // dont forget this and make sure the port is that of the client
+                        // so that the server can call the client back
+                        // the signin-oidc is up because we included RedirectUris on the client, in the line below:
+                        // app.UseHttpsRedirection();
+                         RedirectUris = new [] { "https://localhost:44317/signin-oidc" }
+
                     }
                 })
                 .AddTestUsers(new List<TestUser>()
@@ -84,12 +89,14 @@
                             new Claim(JwtClaimTypes.Name, "alice1"),
                             new Claim(JwtClaimTypes.WebSite, "mywebsite.com"),
                             new Claim(JwtClaimTypes.Email, "alice1@mywebsite.com"),
+                            // add any claims you want
                             new Claim("myclaim", "John Doe"),
                             new Claim("anothercustomclaim", "Manager"),
                         }
                     }
                 })
                 //    .AddDeveloperSigningCredential();    // this is needed only if we run with no cert
+                // if we install a cert (in my, in localmachine), then we can sign
                 .AddSigningCredential(OpenCertFromStore());
 
 
@@ -109,6 +116,25 @@
 
         private X509Certificate2 OpenCertFromStore()
         {
+            /*
+             *
+             * to install this server run this line from powershell admin
+             * 
+             * $todaydt = Get-Date
+             * $3years = $todaydt.AddYears(3)
+             * $CertPassword = ConvertTo-SecureString -String “YourPassword” -Force –AsPlainText
+             * New-SelfSignedCertificate -dnsname workshop.plainconcepts.com -notafter $3years -CertStoreLocation cert:\LocalMachine\My -KeyUsage DigitalSignature
+             *
+             * change 'workshop.plainconcepts.com' to whatever you want
+             *
+             * then copy the thumbprint here from the cert once installed
+             *
+             * the other argument is false since this is a selfsigned cert, not one actually
+             * signed from a trusted entity
+             *
+             */
+
+
             using (var store = new X509Store(StoreName.My, StoreLocation.LocalMachine))
             {
                 store.Open(OpenFlags.ReadOnly);

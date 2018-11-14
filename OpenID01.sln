@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protected Resource", "Prote
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{705091F0-20EB-4990-B1B1-8423E942C746}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthServer", "..\src\AuthServer\AuthServer.csproj", "{E358FB27-7B8D-4AA1-9EA1-AE74E5695E04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthServer", "src\AuthServer\AuthServer.csproj", "{E358FB27-7B8D-4AA1-9EA1-AE74E5695E04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

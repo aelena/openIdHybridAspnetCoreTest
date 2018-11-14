@@ -1,8 +1,8 @@
-﻿using IdentityModel;
-
+﻿
 namespace AuthServer
 {
 
+    using IdentityModel;
     using IdentityServer4;
     using IdentityServer4.Models;
     using IdentityServer4.Test;
@@ -86,7 +86,6 @@ namespace AuthServer
                 })
                 .AddDeveloperSigningCredential();
 
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -94,6 +93,7 @@ namespace AuthServer
         {
             app.UseIdentityServer();
             app.UseStaticFiles();
+            // always last middleware and set up with default route scheme 
             app.UseMvcWithDefaultRoute();
 
         }

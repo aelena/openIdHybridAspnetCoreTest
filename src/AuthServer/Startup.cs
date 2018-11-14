@@ -1,5 +1,4 @@
-﻿
-namespace AuthServer
+﻿namespace AuthServer
 {
 
     using IdentityModel;
@@ -14,6 +13,7 @@ namespace AuthServer
     using System;
     using System.Security.Claims;
     using System.Collections.Generic;
+    using System.Security.Cryptography.X509Certificates;
 
 
     public class Startup
@@ -24,14 +24,13 @@ namespace AuthServer
         // https://localhost:44301/.well-known/openid-configuration/jwks
 
 
-        private const string ApiName = "api1";
+        private const string ApiName = "basket";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddMvc();
             services.AddIdentityServer().AddInMemoryApiResources(new[]
                 {
                     new ApiResource()
@@ -62,8 +61,14 @@ namespace AuthServer
                         {
                             ApiName,
                             IdentityServerConstants.StandardScopes.Profile,
+                            IdentityServerConstants.StandardScopes.OpenId,
                             IdentityServerConstants.StandardScopes.Email
-                        }
+                        },
+                        AllowedGrantTypes = new []{
+                            GrantType.Hybrid
+                        },
+                        RedirectUris = new [] { "https://localhost:44317/signin-oidc" }
+                        
                     }
                 })
                 .AddTestUsers(new List<TestUser>()
@@ -84,7 +89,11 @@ namespace AuthServer
                         }
                     }
                 })
-                .AddDeveloperSigningCredential();
+                //    .AddDeveloperSigningCredential();    // this is needed only if we run with no cert
+                .AddSigningCredential(OpenCertFromStore());
+
+
+            services.AddMvc();
 
         }
 
@@ -96,6 +105,17 @@ namespace AuthServer
             // always last middleware and set up with default route scheme 
             app.UseMvcWithDefaultRoute();
 
+        }
+
+        private X509Certificate2 OpenCertFromStore()
+        {
+            using (var store = new X509Store(StoreName.My, StoreLocation.LocalMachine))
+            {
+                store.Open(OpenFlags.ReadOnly);
+                var cert = store.Certificates.Find(X509FindType.FindByThumbprint,
+                    "F9069BB4B703DC352D5639517D71BA12D3FEB136", false);
+                return cert[0];
+            }
         }
     }
 }

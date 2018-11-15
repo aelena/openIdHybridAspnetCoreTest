@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 
 namespace ApiClient
 {
@@ -67,6 +68,12 @@ namespace ApiClient
                     setup.SaveTokens = true;
 
                     setup.GetClaimsFromUserInfoEndpoint = true;
+
+                    setup.Events.OnUserInformationReceived = async context =>
+                        {
+                            context.User.TryGetValue("name", out JToken names);
+                            context.User["names"] = new JValue(names?.Value<string>());
+                        };
 
                 });
 

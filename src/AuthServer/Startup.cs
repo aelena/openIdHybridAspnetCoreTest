@@ -30,7 +30,18 @@
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices ( IServiceCollection services )
         {
+            // keeps data in IDistributedCache, if we dont say anything, the default is InMemory cache, not distributed...
+            services.AddOidcStateDataFormatterCache();
 
+            // you can add additional authentication handlers
+            //services.AddAuthentication().AddOpenIdConnect("aad", "Azure AD", setup =>
+            //{
+            //    setup.Authority = "https://login.windows.net/____tenantname____";
+            //    setup.ClientSecret = "wha'ever";
+            //    setup.ClientId = "wha'ever";
+            //    setup.SingInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+            //    setup.SingOutScheme = IdentityServerConstants.SignoutScheme;
+            //});
             // in AddIdentityServer we can configure lots of stuff for the server  via lambda
             services.AddIdentityServer (setup =>
                  {

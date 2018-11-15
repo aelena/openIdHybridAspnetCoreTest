@@ -28,11 +28,18 @@
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices ( IServiceCollection services )
         {
 
-            services.AddIdentityServer().AddInMemoryApiResources(new[]
-                {
+            // in AddIdentityServer we can configure lots of stuff for the server  via lambda
+            services.AddIdentityServer (setup =>
+                 {
+
+                     setup.Authentication.CookieLifetime = new TimeSpan (0, 1, 0, 0);
+                     setup.Authentication.CookieSlidingExpiration = true;
+
+                 }).AddInMemoryApiResources (new []
+                 {
                     new ApiResource()
                     {
                         Name = ApiName,
@@ -43,8 +50,8 @@
                             new Scope(ApiName, $"scope 1 for {ApiName}", new[] {"myclaim", "anothercustomclaim"}),
                         }
                     }
-                })
-                .AddInMemoryIdentityResources(new List<IdentityResource>()
+                 })
+                .AddInMemoryIdentityResources (new List<IdentityResource> ()
                 {
                     new IdentityResources.OpenId(),
                     new IdentityResources.Profile(),
@@ -56,7 +63,7 @@
                     })
 
                 })
-                .AddInMemoryClients(new[]
+                .AddInMemoryClients (new []
                 {
                     new Client()
                     {
@@ -85,7 +92,7 @@
 
                     }
                 })
-                .AddTestUsers(new List<TestUser>()
+                .AddTestUsers (new List<TestUser> ()
                 {
                     new TestUser()
                     {
@@ -101,30 +108,30 @@
                             // add any claims you want
                             new Claim("myclaim", "John Doe"),
                             new Claim("anothercustomclaim", "Manager"),
-                            new Claim("userrole", "admin"), 
+                            new Claim("userrole", "admin"),
                         }
                     }
                 })
                 //    .AddDeveloperSigningCredential();    // this is needed only if we run with no cert
                 // if we install a cert (in my, in localmachine), then we can sign
-                .AddSigningCredential(OpenCertFromStore());
+                .AddSigningCredential (OpenCertFromStore ());
 
 
-            services.AddMvc();
+            services.AddMvc ();
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure ( IApplicationBuilder app, IHostingEnvironment env )
         {
-            app.UseIdentityServer();
-            app.UseStaticFiles();
+            app.UseIdentityServer ();
+            app.UseStaticFiles ();
             // always last middleware and set up with default route scheme 
-            app.UseMvcWithDefaultRoute();
+            app.UseMvcWithDefaultRoute ();
 
         }
 
-        private X509Certificate2 OpenCertFromStore()
+        private X509Certificate2 OpenCertFromStore ()
         {
             /*
              *
@@ -145,12 +152,12 @@
              */
 
 
-            using (var store = new X509Store(StoreName.My, StoreLocation.LocalMachine))
+            using ( var store = new X509Store (StoreName.My, StoreLocation.LocalMachine) )
             {
-                store.Open(OpenFlags.ReadOnly);
-                var cert = store.Certificates.Find(X509FindType.FindByThumbprint,
+                store.Open (OpenFlags.ReadOnly);
+                var cert = store.Certificates.Find (X509FindType.FindByThumbprint,
                     "F9069BB4B703DC352D5639517D71BA12D3FEB136", false);
-                return cert[0];
+                return cert [0];
             }
         }
     }

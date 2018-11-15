@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,57 +11,54 @@ namespace ApiClient.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index ()
         {
-            return View();
+            return View ();
         }
 
-        public IActionResult About()
+        public IActionResult About ()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewData ["Message"] = "Your application description page.";
 
-            return View();
+            return View ();
         }
 
-        public IActionResult Contact()
+        public IActionResult Contact ()
         {
-            ViewData["Message"] = "Your contact page.";
+            ViewData ["Message"] = "Your contact page.";
 
-            return View();
+            return View ();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Privacy ()
         {
-            return View();
+            return View ();
         }
 
         [Authorize]
-        public async Task<IActionResult> Tokens()
+        public async Task<IActionResult> Tokens ()
         {
 
-            var claims = HttpContext.User.Claims.ToList();
-            using (var client = new HttpClient())
+            var claims = HttpContext.User.Claims.ToList ();
+            using ( var client = new HttpClient () )
             {
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await HttpContext.GetTokenAsync("access_token")}");
-                var response = await client.GetAsync("https://localhost:44391/api/basket");
-                if (!response.IsSuccessStatusCode)
-                    ViewData["Message"] = $"Error calling API {response.StatusCode}";
+                client.DefaultRequestHeaders.Add ("Authorization", $"Bearer {await HttpContext.GetTokenAsync ("access_token")}");
+                var response = await client.GetAsync ("https://localhost:44391/api/basket");
+                if ( !response.IsSuccessStatusCode )
+                    ViewData ["Message"] = $"Error calling API {response.StatusCode}";
                 else
-                    ViewData["Message"] = $"Success!";
+                    ViewData ["Message"] = $"Success!";
             }
 
-            return View(new TokenModel()
+            return View (new TokenModel ()
             {
-                AccessToken = await HttpContext.GetTokenAsync("access_token"),
-                IdToken = await HttpContext.GetTokenAsync("id_token")
+                AccessToken = await HttpContext.GetTokenAsync ("access_token"),
+                IdToken = await HttpContext.GetTokenAsync ("id_token")
             });
         }
 
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        [ResponseCache (Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error () => View (new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

@@ -48,7 +48,13 @@
                 {
                     new IdentityResources.OpenId(),
                     new IdentityResources.Profile(),
-                    new IdentityResources.Email()
+                    new IdentityResources.Email(),
+                    // add custom claims 
+                    new IdentityResource("extendedprofile", new []
+                    {
+                        "userrole", "anothercustomclaim", "myclaim"
+                    })
+
                 })
                 .AddInMemoryClients(new[]
                 {
@@ -63,7 +69,9 @@
                             ApiName,
                             IdentityServerConstants.StandardScopes.Profile,
                             IdentityServerConstants.StandardScopes.OpenId,
-                            IdentityServerConstants.StandardScopes.Email
+                            IdentityServerConstants.StandardScopes.Email,
+                            // include it here or you get an unauthorized client error message
+                            "extendedprofile"
                         },
                         AllowedGrantTypes = new []{
                             GrantType.Hybrid
@@ -72,7 +80,8 @@
                         // so that the server can call the client back
                         // the signin-oidc is up because we included RedirectUris on the client, in the line below:
                         // app.UseHttpsRedirection();
-                         RedirectUris = new [] { "https://localhost:44317/signin-oidc" }
+                         RedirectUris = new [] { "https://localhost:44317/signin-oidc" },
+                        AlwaysIncludeUserClaimsInIdToken = true
 
                     }
                 })
@@ -80,18 +89,19 @@
                 {
                     new TestUser()
                     {
-                        Username = "alice1",
-                        Password = "workshop01*",
+                        Username = "alice",
+                        Password = "alice",
                         SubjectId = Guid.NewGuid().ToString(),
                         IsActive = true,
                         Claims = new[]
                         {
-                            new Claim(JwtClaimTypes.Name, "alice1"),
+                            new Claim(JwtClaimTypes.Name, "alice"),
                             new Claim(JwtClaimTypes.WebSite, "mywebsite.com"),
-                            new Claim(JwtClaimTypes.Email, "alice1@mywebsite.com"),
+                            new Claim(JwtClaimTypes.Email, "alice@mywebsite.com"),
                             // add any claims you want
                             new Claim("myclaim", "John Doe"),
                             new Claim("anothercustomclaim", "Manager"),
+                            new Claim("userrole", "admin"), 
                         }
                     }
                 })

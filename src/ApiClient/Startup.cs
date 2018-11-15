@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,9 +49,21 @@ namespace ApiClient
                     setup.Scope.Add("openid");
                     setup.Scope.Add("profile");
                     setup.Scope.Add("basket");
+                    // asking for the extended profile info that we also added via custom claims in the server
+                    setup.Scope.Add("extendedprofile");
+
+                    // by default, there are a lot of claim actions that remove stuff from the returned claims
+                    // so, in a bit counterintuitive move, you need to remove the claim action that deletes the amr info
+                    setup.ClaimActions.Remove("amr");
+
+                    setup.ClaimActions.MapUniqueJsonKey("myclaim", "myclaim");
+                    setup.ClaimActions.MapUniqueJsonKey("anothercustomclaim", "anothercustomclaim");
+                    setup.ClaimActions.MapUniqueJsonKey("userrole", "userrole");
 
                     // save them to the http context
                     setup.SaveTokens = true;
+
+                    setup.GetClaimsFromUserInfoEndpoint = true;
 
                 });
 

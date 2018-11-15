@@ -41,11 +41,10 @@ namespace ApiClient.Controllers
         public async Task<IActionResult> Tokens()
         {
 
-            //var claims = HttpContext.User.Claims.ToList();
+            var claims = HttpContext.User.Claims.ToList();
             using (var client = new HttpClient())
             {
-                client.DefaultRequestHeaders.Add("Authorization",
-                    $"Bearer {await HttpContext.GetTokenAsync("access_token")}");
+                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await HttpContext.GetTokenAsync("access_token")}");
                 var response = await client.GetAsync("http://localhost:44391/api/basket");
                 if (!response.IsSuccessStatusCode)
                     ViewData["Message"] = $"Error calling API {response.StatusCode}";

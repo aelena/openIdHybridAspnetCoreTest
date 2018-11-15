@@ -37,6 +37,8 @@
 
                      setup.Authentication.CookieLifetime = new TimeSpan (0, 1, 0, 0);
                      setup.Authentication.CookieSlidingExpiration = true;
+                     // lots of configuration options...
+                     //setup.Discovery.ShowApiScopes
 
                  }).AddInMemoryApiResources (new []
                  {
@@ -71,6 +73,16 @@
                         ClientId = "Hybrid",
                         ClientSecrets = {new Secret("secret".Sha256())},
                         ClientName = "My Own Hybrid Client",
+                        AccessTokenType = AccessTokenType.Jwt,
+                        AccessTokenLifetime =  6000,
+                        IdentityTokenLifetime =  6000,
+                        AllowOfflineAccess = true,
+                        AuthorizationCodeLifetime = 100,
+                        PostLogoutRedirectUris =
+                        {
+                            "https://localhost:44317/signout-callback-oidc"
+                        },
+                        FrontChannelLogoutUri = "https://localhost:44317/home/FrontLogout",
                         AllowedScopes =
                         {
                             ApiName,
@@ -85,8 +97,7 @@
                         },
                         // dont forget this and make sure the port is that of the client
                         // so that the server can call the client back
-                        // the signin-oidc is up because we included RedirectUris on the client, in the line below:
-                        // app.UseHttpsRedirection();
+                        // the signin-oidc is up because we included RedirectUris on the client
                          RedirectUris = new [] { "https://localhost:44317/signin-oidc" },
                         AlwaysIncludeUserClaimsInIdToken = true
 

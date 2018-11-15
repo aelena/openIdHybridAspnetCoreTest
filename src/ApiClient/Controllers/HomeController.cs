@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ApiClient.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 
 namespace ApiClient.Controllers
@@ -56,6 +58,20 @@ namespace ApiClient.Controllers
                 IdToken = await HttpContext.GetTokenAsync ("id_token")
             });
         }
+
+
+        /// <summary>
+        /// this logs us out only of the app but the cookie persists on the server, so when we refresh we get the tokens page back
+        /// because the server gives a new token since we never logged out from there
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult FrontLogout () => new SignOutResult (CookieAuthenticationDefaults.AuthenticationScheme);
+
+        /// <summary>
+        /// this logs us out in the server and other applications, so we need to authenticate again when we want to get the token page back
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult FederatedLogout () => new SignOutResult (new [] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme });
 
 
         [ResponseCache (Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

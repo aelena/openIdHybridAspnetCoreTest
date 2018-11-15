@@ -24,14 +24,17 @@ namespace ApiClient
 
             services.AddAuthentication (setup =>
                  {
-                    // be careful not to use the DefaultAuthenticationScheme or you get an error
-                    setup.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    // no cookie here
-                    setup.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                     // be careful not to use the DefaultAuthenticationScheme or you get an error
+                     setup.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                     // no cookie here
+                     setup.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
                  })
                 .AddCookie ()
                 .AddOpenIdConnect (setup =>
-                 {
+                {
+
+                    // where to redirect after logout 
+                    setup.SignedOutRedirectUri = "Home/About";
 
                     // clear everything if we want to make it really explicit
                     // otherwise "openid" and "profile" always come in as default scopes
@@ -41,14 +44,14 @@ namespace ApiClient
                     setup.Authority = "https://localhost:44301";
                     // make sure it is the same client name as used on the server
                     setup.ClientId = "Hybrid";
-                     setup.ClientSecret = "secret";
+                    setup.ClientSecret = "secret";
                     // response
                     setup.ResponseType = "code id_token";
 
                     // now we add the specific scopes
                     setup.Scope.Add ("openid");
-                     setup.Scope.Add ("profile");
-                     setup.Scope.Add ("basket");
+                    setup.Scope.Add ("profile");
+                    setup.Scope.Add ("basket");
                     // asking for the extended profile info that we also added via custom claims in the server
                     setup.Scope.Add ("extendedprofile");
 
@@ -56,16 +59,16 @@ namespace ApiClient
                     // so, in a bit counterintuitive move, you need to remove the claim action that deletes the amr info
                     setup.ClaimActions.Remove ("amr");
 
-                     setup.ClaimActions.MapUniqueJsonKey ("myclaim", "myclaim");
-                     setup.ClaimActions.MapUniqueJsonKey ("anothercustomclaim", "anothercustomclaim");
-                     setup.ClaimActions.MapUniqueJsonKey ("userrole", "userrole");
+                    setup.ClaimActions.MapUniqueJsonKey ("myclaim", "myclaim");
+                    setup.ClaimActions.MapUniqueJsonKey ("anothercustomclaim", "anothercustomclaim");
+                    setup.ClaimActions.MapUniqueJsonKey ("userrole", "userrole");
 
                     // save them to the http context
                     setup.SaveTokens = true;
 
-                     setup.GetClaimsFromUserInfoEndpoint = true;
+                    setup.GetClaimsFromUserInfoEndpoint = true;
 
-                 });
+                });
 
             //services.Configure<CookiePolicyOptions>(options =>
             //{

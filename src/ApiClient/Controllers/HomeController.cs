@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ApiClient.Models;
@@ -39,6 +40,19 @@ namespace ApiClient.Controllers
         [Authorize]
         public async Task<IActionResult> Tokens()
         {
+
+            //var claims = HttpContext.User.Claims.ToList();
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Add("Authorization",
+                    $"Bearer {await HttpContext.GetTokenAsync("access_token")}");
+                var response = await client.GetAsync("http://localhost:44391/api/basket");
+                if (!response.IsSuccessStatusCode)
+                    ViewData["Message"] = $"Error calling API {response.StatusCode}";
+                else
+                    ViewData["Message"] = $"Success!";
+            }
+
             return View(new TokenModel()
             {
                 AccessToken = await HttpContext.GetTokenAsync("access_token"),

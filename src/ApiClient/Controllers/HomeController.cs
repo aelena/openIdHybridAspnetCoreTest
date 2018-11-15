@@ -45,7 +45,7 @@ namespace ApiClient.Controllers
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {await HttpContext.GetTokenAsync("access_token")}");
-                var response = await client.GetAsync("http://localhost:44391/api/basket");
+                var response = await client.GetAsync("https://localhost:44391/api/basket");
                 if (!response.IsSuccessStatusCode)
                     ViewData["Message"] = $"Error calling API {response.StatusCode}";
                 else
